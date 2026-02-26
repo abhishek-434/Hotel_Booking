@@ -1,8 +1,6 @@
-/* ================================================
-   THE GRAND CRIMSON — VANILLA JAVASCRIPT
-   ================================================ */
 
-// ── Room Data ──────────────────────────────────
+
+
 const ROOMS = [
     {
         id: 'standard',
@@ -189,9 +187,9 @@ const ROOM_PRICES = {
     penthouse: 49999
 };
 
-// ── DOM Ready ──────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
-    renderRooms();
+    renderRooms(ROOMS);
     initNavbar();
     initBookingForm();
     initContactForm();
@@ -199,14 +197,30 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollReveal();
     initBackToTop();
     setMinDates();
+    initFilters();
+    initFAQ();
 });
 
-// ── Render Room Cards ──────────────────────────
-function renderRooms() {
+
+
+
+function renderRooms(roomsToRender) {
     const container = document.getElementById('roomsContainer');
     if (!container) return;
 
-    container.innerHTML = ROOMS.map(room => `
+    if (roomsToRender.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-5 reveal">
+                <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+                <h4 class="text-muted">No rooms match your criteria</h4>
+                <p class="text-muted">Try adjusting your filters or search terms.</p>
+                <button class="btn btn-outline-crimson mt-2" onclick="resetFilters()">Reset All Filters</button>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = roomsToRender.map(room => `
         <div class="col-lg-4 col-md-6 reveal">
             <div class="room-card">
                 <div class="room-card-img-wrapper">
@@ -235,11 +249,51 @@ function renderRooms() {
         </div>
     `).join('');
 
-    // Trigger reveal for newly added elements
+
     setTimeout(initScrollReveal, 100);
 }
 
-// ── Room Detail Modal ──────────────────────────
+
+function initFilters() {
+    const searchInput = document.getElementById('filterSearch');
+    const priceSelect = document.getElementById('filterPrice');
+    const sortSelect = document.getElementById('filterSort');
+
+    const handleFilter = () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const maxPrice = priceSelect.value === 'any' ? Infinity : parseInt(priceSelect.value);
+        const sortBy = sortSelect.value;
+
+        let filtered = ROOMS.filter(room => {
+            const matchesSearch = room.name.toLowerCase().includes(searchTerm) ||
+                room.description.toLowerCase().includes(searchTerm) ||
+                room.amenities.some(a => a.toLowerCase().includes(searchTerm));
+            const matchesPrice = room.price <= maxPrice;
+            return matchesSearch && matchesPrice;
+        });
+
+        if (sortBy === 'price-low') {
+            filtered.sort((a, b) => a.price - b.price);
+        } else if (sortBy === 'price-high') {
+            filtered.sort((a, b) => b.price - a.price);
+        }
+
+        renderRooms(filtered);
+    };
+
+    searchInput?.addEventListener('input', handleFilter);
+    priceSelect?.addEventListener('change', handleFilter);
+    sortSelect?.addEventListener('change', handleFilter);
+}
+
+function resetFilters() {
+    document.getElementById('filterSearch').value = '';
+    document.getElementById('filterPrice').value = 'any';
+    document.getElementById('filterSort').value = 'default';
+    renderRooms(ROOMS);
+}
+
+
 function openRoomModal(roomId) {
     const room = ROOMS.find(r => r.id === roomId);
     if (!room) return;
@@ -261,7 +315,7 @@ function openRoomModal(roomId) {
         </ul>
     `;
 
-    // Update the Book button to select this room
+
     const bookBtn = document.getElementById('modalBookBtn');
     bookBtn.onclick = () => selectRoom(roomId);
 
@@ -269,20 +323,20 @@ function openRoomModal(roomId) {
     modal.show();
 }
 
-// ── Select Room in Booking Form ────────────────
+
 function selectRoom(roomId) {
     const roomSelect = document.getElementById('roomType');
     if (roomSelect) {
         roomSelect.value = roomId;
         roomSelect.dispatchEvent(new Event('change'));
     }
-    // Smooth scroll to booking
+
     setTimeout(() => {
         document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
     }, 300);
 }
 
-// ── Sticky Navbar ──────────────────────────────
+
 function initNavbar() {
     const navbar = document.getElementById('mainNav');
     window.addEventListener('scroll', () => {
@@ -293,7 +347,7 @@ function initNavbar() {
         }
     });
 
-    // Close mobile menu on link click
+
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
             const collapse = document.getElementById('navMenu');
@@ -302,7 +356,7 @@ function initNavbar() {
         });
     });
 
-    // Active link highlight on scroll
+
     const sections = document.querySelectorAll('section[id]');
     window.addEventListener('scroll', () => {
         const scrollPos = window.scrollY + 120;
@@ -321,7 +375,7 @@ function initNavbar() {
     });
 }
 
-// ── Set Minimum Dates ──────────────────────────
+
 function setMinDates() {
     const today = new Date().toISOString().split('T')[0];
     const checkIn = document.getElementById('checkIn');
@@ -345,7 +399,7 @@ function setMinDates() {
     document.getElementById('roomType')?.addEventListener('change', updatePriceSummary);
 }
 
-// ── Price Calculation ──────────────────────────
+
 function updatePriceSummary() {
     const roomType = document.getElementById('roomType').value;
     const checkIn = document.getElementById('checkIn').value;
@@ -368,7 +422,7 @@ function updatePriceSummary() {
     wrapper.style.display = 'none';
 }
 
-// ── Booking Form ───────────────────────────────
+
 function initBookingForm() {
     const form = document.getElementById('bookingForm');
     if (!form) return;
@@ -483,14 +537,14 @@ function formatDate(dateStr) {
     return new Date(dateStr).toLocaleDateString('en-IN', options);
 }
 
-// ── Contact Form ───────────────────────────────
+
 function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        // Simple validation
+
         const inputs = form.querySelectorAll('[required]');
         let valid = true;
         inputs.forEach(input => {
@@ -509,7 +563,7 @@ function initContactForm() {
     });
 }
 
-// ── Newsletter Form ────────────────────────────
+
 function initNewsletterForm() {
     const form = document.getElementById('newsletterForm');
     if (!form) return;
@@ -524,7 +578,7 @@ function initNewsletterForm() {
     });
 }
 
-// ── Scroll Reveal ──────────────────────────────
+
 function initScrollReveal() {
     const reveals = document.querySelectorAll('.reveal, .service-card, .section-header');
 
@@ -545,7 +599,47 @@ function initScrollReveal() {
     });
 }
 
-// ── Back to Top ────────────────────────────────
+
+function initFAQ() {
+    const questions = document.querySelectorAll('.faq-question');
+    questions.forEach(q => {
+        q.addEventListener('click', () => {
+            const answer = q.nextElementSibling;
+            const isOpen = q.classList.contains('active');
+
+            questions.forEach(otherQ => {
+                if (otherQ !== q) {
+                    otherQ.classList.remove('active');
+                    otherQ.nextElementSibling.classList.remove('show');
+                    otherQ.nextElementSibling.style.maxHeight = null;
+                }
+            });
+
+            q.classList.toggle('active');
+            answer.classList.toggle('show');
+
+            if (isOpen) {
+                answer.style.maxHeight = null;
+            } else {
+                answer.style.maxHeight = answer.scrollHeight + "px";
+            }
+        });
+    });
+}
+
+
+function openLightbox(imgSrc, title) {
+    const modal = new bootstrap.Modal(document.getElementById('lightboxModal'));
+    const img = document.getElementById('lightboxImg');
+    const titleEl = document.getElementById('lightboxTitle');
+
+    img.src = imgSrc;
+    titleEl.textContent = title;
+
+    modal.show();
+}
+
+
 function initBackToTop() {
     const btn = document.getElementById('backToTop');
     if (!btn) return;

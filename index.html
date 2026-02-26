@@ -35,6 +35,8 @@
                     <li class="nav-item"><a class="nav-link" href="#rooms">Rooms</a></li>
                     <li class="nav-item"><a class="nav-link" href="#booking">Booking</a></li>
                     <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#testimonials">Testimonials</a></li>
                     <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
@@ -73,6 +75,34 @@
                 <p class="section-desc">Choose from our curated selection of world-class rooms designed for ultimate
                     comfort and luxury.</p>
             </div>
+
+
+            <div class="filter-container reveal">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filterSearch"><i class="bi bi-search"></i> Search Rooms</label>
+                        <input type="text" id="filterSearch" class="form-control" placeholder="e.g. Deluxe, Suite...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterPrice"><i class="bi bi-currency-rupee"></i> Max Price</label>
+                        <select id="filterPrice" class="form-select">
+                            <option value="any">Any Price</option>
+                            <option value="5000">Under ₹5,000</option>
+                            <option value="10000">Under ₹10,000</option>
+                            <option value="20000">Under ₹20,000</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterSort"><i class="bi bi-sort-down"></i> Sort By</label>
+                        <select id="filterSort" class="form-select">
+                            <option value="default">Recommended</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-4 mt-3" id="roomsContainer">
             </div>
         </div>
@@ -396,6 +426,113 @@
         </div>
     </section>
 
+
+    <section id="gallery" class="section-padding">
+        <div class="container">
+            <div class="section-header text-center">
+                <p class="section-subtitle">Visual Experience</p>
+                <h2 class="section-title">Hotel Gallery</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="gallery-grid mt-4">
+                <div class="gallery-item reveal"
+                    onclick="openLightbox('https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1200&q=80', 'Luxury Lobby')">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80" alt="Lobby">
+                    <div class="gallery-overlay"><i class="bi bi-search"></i></div>
+                </div>
+                <div class="gallery-item reveal"
+                    onclick="openLightbox('https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=1200&q=80', 'Infinity Pool')">
+                    <img src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=600&q=80" alt="Pool">
+                    <div class="gallery-overlay"><i class="bi bi-search"></i></div>
+                </div>
+                <div class="gallery-item reveal"
+                    onclick="openLightbox('https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=1200&q=80', 'Fine Dining')">
+                    <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=600&q=80" alt="Restaurant">
+                    <div class="gallery-overlay"><i class="bi bi-search"></i></div>
+                </div>
+                <div class="gallery-item reveal"
+                    onclick="openLightbox('https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGhvdGVsc3xlbnwwfHwwfHx8MA%3D%3D', 'Premium Bedroom')">
+                    <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGhvdGVsc3xlbnwwfHwwfHx8MA%3D%3D', 'Premium Bedroom"
+                        alt="Bedroom">
+                    <div class="gallery-overlay"><i class="bi bi-search"></i></div>
+                </div>
+                <div class="gallery-item reveal"
+                    onclick="openLightbox('https://images.unsplash.com/photo-1693578538512-fc66f318c833?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fHNwYXxlbnwwfHwwfHx8MA%3D%3D', 'Luxury Spa')">
+                    <img src="https://images.unsplash.com/photo-1693578538512-fc66f318c833?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fHNwYXxlbnwwfHwwfHx8MA%3D%3D"
+                        alt="Spa">
+                    <div class="gallery-overlay"><i class="bi bi-search"></i></div>
+                </div>
+                <div class="gallery-item reveal"
+                    onclick="openLightbox('https://images.unsplash.com/photo-1711743266323-5badf42d4797?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWwlMjBleHRlcmlvcnxlbnwwfHwwfHx8MA%3D%3D')">
+                    <img src="https://images.unsplash.com/photo-1711743266323-5badf42d4797?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWwlMjBleHRlcmlvcnxlbnwwfHwwfHx8MA%3D%3D"
+                        alt="Exterior">
+                    <div class="gallery-overlay"><i class="bi bi-search"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="faq" class="section-padding bg-light-red">
+        <div class="container">
+            <div class="section-header text-center">
+                <p class="section-subtitle">Common Questions</p>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-8">
+                    <div class="faq-accordion">
+                        <div class="faq-item reveal">
+                            <button class="faq-question">What are the check-in and check-out times? <i
+                                    class="bi bi-chevron-down"></i></button>
+                            <div class="faq-answer">
+                                <p>Our standard check-in time is 2:00 PM and check-out time is 11:00 AM. Early check-in
+                                    or late check-out is subject to availability and may incur additional charges.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item reveal">
+                            <button class="faq-question">Is breakfast included in the room rate? <i
+                                    class="bi bi-chevron-down"></i></button>
+                            <div class="faq-answer">
+                                <p>Breakfast inclusion depends on the room type and package you select. Our Superior,
+                                    Executive, and all Suite categories include a complimentary buffet breakfast at our
+                                    main restaurant.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item reveal">
+                            <button class="faq-question">Do you offer airport shuttle services? <i
+                                    class="bi bi-chevron-down"></i></button>
+                            <div class="faq-answer">
+                                <p>Yes, we provide luxury airport transfers. Our Luxury, Presidential, and Penthouse
+                                    suites include complimentary transfers. For other room types, transfers can be
+                                    arranged through our concierge for a nominal fee.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item reveal">
+                            <button class="faq-question">What is your cancellation policy? <i
+                                    class="bi bi-chevron-down"></i></button>
+                            <div class="faq-answer">
+                                <p>Cancellations made up to 48 hours before the arrival date are free of charge.
+                                    Cancellations within 48 hours or no-shows will be charged for the first night's
+                                    stay.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item reveal">
+                            <button class="faq-question">Are pets allowed in the hotel? <i
+                                    class="bi bi-chevron-down"></i></button>
+                            <div class="faq-answer">
+                                <p>While we love animals, we currently only allow small service animals with prior
+                                    notification. Please contact our front desk for more details regarding our service
+                                    animal policy.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="about" class="section-padding">
         <div class="container">
             <div class="row align-items-center g-5">
@@ -563,6 +700,20 @@
                     <button class="btn btn-crimson mt-3" data-bs-dismiss="modal">
                         <i class="bi bi-house"></i> Back to Home
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 bg-transparent">
+                <div class="modal-body text-center p-0 position-relative">
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    <img src="" id="lightboxImg" class="lightbox-img rounded shadow-lg" alt="Hotel Photo">
+                    <h4 id="lightboxTitle" class="text-white mt-3 fw-light"></h4>
                 </div>
             </div>
         </div>

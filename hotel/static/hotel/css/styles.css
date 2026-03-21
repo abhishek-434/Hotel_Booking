@@ -1386,4 +1386,25 @@ a {
 .social-auth .btn:hover {
     background: #f8f8f8;
     border-color: #ddd;
-}
+}
+
+/* Responsiveness Fixes */
+@media (max-width: 991px) {
+    .auth-page .navbar .container {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 575px) {
+    .auth-card {
+        padding: 30px 20px;
+    }
+    
+    .form-check-label {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+}
+

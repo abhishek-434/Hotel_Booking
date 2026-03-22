@@ -397,6 +397,7 @@ function setMinDates() {
 
     checkOut?.addEventListener('change', updatePriceSummary);
     document.getElementById('roomType')?.addEventListener('change', updatePriceSummary);
+    document.getElementById('numRooms')?.addEventListener('change', updatePriceSummary);
 }
 
 
@@ -408,11 +409,12 @@ function updatePriceSummary() {
 
     if (roomType && checkIn && checkOut) {
         const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
+        const numRooms = parseInt(document.getElementById('numRooms').value) || 1;
         if (nights > 0) {
             const pricePerNight = ROOM_PRICES[roomType];
-            const total = pricePerNight * nights;
+            const total = pricePerNight * nights * numRooms;
             const room = ROOMS.find(r => r.id === roomType);
-            document.getElementById('summaryRoom').textContent = `${room.name} — ₹${pricePerNight.toLocaleString('en-IN')}/night`;
+            document.getElementById('summaryRoom').textContent = `${room.name} (${numRooms} ${numRooms > 1 ? 'Rooms' : 'Room'}) — ₹${pricePerNight.toLocaleString('en-IN')}/night`;
             document.getElementById('summaryNights').textContent = `${nights} night${nights > 1 ? 's' : ''}`;
             document.getElementById('summaryTotal').textContent = `₹${total.toLocaleString('en-IN')}`;
             wrapper.style.display = 'block';
@@ -424,16 +426,64 @@ function updatePriceSummary() {
 
 
 function initBookingForm() {
-    const form = document.getElementById('bookingForm');
-    if (!form) return;
+    const bookingForm = document.getElementById('bookingForm');
+    const isAuth = document.getElementById('userAuthStatus')?.value === 'true';
 
-    form.addEventListener('submit', (e) => {
+    bookingForm?.addEventListener('submit', function (e) {
         e.preventDefault();
+        
+        if (!isAuth) {
+            alert('Please sign in to book your luxury stay.');
+            window.location.href = `/login/?next=${window.location.pathname}#booking`;
+            return;
+        }
+
         if (validateBookingForm()) {
-            showBookingConfirmation();
-            form.reset();
-            document.getElementById('priceSummaryWrapper').style.display = 'none';
-            clearValidation();
+            const btn = bookingForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending confirmation...';
+            
+            // Simulate sending email and phone notification
+            setTimeout(() => {
+                showBookingConfirmation();
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                bookingForm.reset();
+                document.getElementById('additionalGuestsContainer').innerHTML = '';
+                document.getElementById('additionalGuestsContainer').classList.add('d-none');
+                updatePriceSummary();
+            }, 1500);
+        }
+    });
+
+    const numGuestsSelect = document.getElementById('numGuests');
+    const additionalGuestsContainer = document.getElementById('additionalGuestsContainer');
+
+    numGuestsSelect?.addEventListener('change', () => {
+        const count = parseInt(numGuestsSelect.value);
+        if (count > 1) {
+            additionalGuestsContainer.innerHTML = '';
+            additionalGuestsContainer.style.display = 'block';
+            for (let i = 2; i <= count; i++) {
+                const div = document.createElement('div');
+                div.className = 'mb-3';
+                div.innerHTML = `
+                    <label class="form-label">Guest ${i} Name <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control additional-guest-name" name="guestName${i}" placeholder="Guest ${i} Full Name" required>
+                    </div>
+                    <div class="invalid-feedback guest-name-error">Please enter the name for guest ${i}.</div>
+                `;
+                additionalGuestsContainer.appendChild(div);
+            }
+            if (numGuestsSelect.value === '5') {
+                 // For 5+ guests, maybe add a note or just stick with 5 for now
+            }
+        } else {
+            additionalGuestsContainer.style.display = 'none';
+            additionalGuestsContainer.innerHTML = '';
         }
     });
 }
@@ -449,6 +499,7 @@ function validateBookingForm() {
     const checkIn = document.getElementById('checkIn');
     const checkOut = document.getElementById('checkOut');
     const numGuests = document.getElementById('numGuests');
+    const numRooms = document.getElementById('numRooms');
 
     if (!name.value.trim()) {
         showError(name, 'nameError', 'Please enter your full name.');
@@ -488,6 +539,29 @@ function validateBookingForm() {
         valid = false;
     }
 
+    if (!numRooms.value) {
+        showError(numRooms, 'roomCountError', 'Please select the number of rooms.');
+        valid = false;
+    }
+
+    const additionalNames = document.querySelectorAll('.additional-guest-name');
+    additionalNames.forEach((input, index) => {
+        if (!input.value.trim()) {
+            input.classList.add('is-invalid');
+            const errorEl = input.parentElement.nextElementSibling;
+            if (errorEl) {
+                errorEl.style.display = 'block';
+            }
+            valid = false;
+        } else {
+            input.classList.remove('is-invalid');
+            const errorEl = input.parentElement.nextElementSibling;
+            if (errorEl) {
+                errorEl.style.display = 'none';
+            }
+        }
+    });
+
     return valid;
 }
 
@@ -511,19 +585,25 @@ function showBookingConfirmation() {
     const roomName = roomType.options[roomType.selectedIndex].text.split('—')[0].trim();
     const checkIn = document.getElementById('checkIn').value;
     const checkOut = document.getElementById('checkOut').value;
+    const numRooms = parseInt(document.getElementById('numRooms').value) || 1;
     const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
     const pricePerNight = ROOM_PRICES[roomType.value];
-    const total = pricePerNight * nights;
+    const total = pricePerNight * nights * numRooms;
+
+    const additionalNames = Array.from(document.querySelectorAll('.additional-guest-name')).map(input => input.value);
+    const allGuests = [name, ...additionalNames];
 
     const details = document.getElementById('confirmationDetails');
     details.innerHTML = `
         <div class="text-start mt-3">
-            <p><strong>Guest:</strong> ${name}</p>
-            <p><strong>Room:</strong> ${roomName}</p>
+            <p><strong>Guests:</strong> ${allGuests.join(', ')}</p>
+            <p><strong>Rooms:</strong> ${numRooms} x ${roomName}</p>
             <p><strong>Check-in:</strong> ${formatDate(checkIn)}</p>
             <p><strong>Check-out:</strong> ${formatDate(checkOut)}</p>
             <p><strong>Duration:</strong> ${nights} night${nights > 1 ? 's' : ''}</p>
             <p class="fs-5 fw-bold text-crimson"><strong>Total:</strong> ₹${total.toLocaleString('en-IN')}</p>
+            <hr>
+            <p class="text-success small"><i class="bi bi-check-circle-fill"></i> A confirmation has been sent to your registered email and phone number.</p>
         </div>
         <p class="mt-2">Booking ID: <strong>GC-${Date.now().toString().slice(-8)}</strong></p>
     `;

@@ -1384,7 +1384,7 @@ a {
 }
 
 .social-auth .btn:hover {
-    background: #f8f8f8;
+    background: #C00000;
     border-color: #ddd;
 }
 
@@ -1407,4 +1407,4 @@ a {
         line-height: 1.4;
     }
 }
-
+

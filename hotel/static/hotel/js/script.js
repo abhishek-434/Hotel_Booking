@@ -444,16 +444,48 @@ function initBookingForm() {
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending confirmation...';
             
-            // Simulate sending email and phone notification
-            setTimeout(() => {
-                showBookingConfirmation();
+            const formData = {
+                guestName: document.getElementById('guestName').value,
+                guestEmail: document.getElementById('guestEmail').value,
+                guestPhone: document.getElementById('guestPhone').value,
+                roomType: document.getElementById('roomType').value,
+                checkIn: document.getElementById('checkIn').value,
+                checkOut: document.getElementById('checkOut').value,
+                numGuests: document.getElementById('numGuests').value,
+                numRooms: document.getElementById('numRooms').value,
+                specialRequest: document.getElementById('specialRequest').value,
+                additionalGuests: Array.from(document.querySelectorAll('.additional-guest-name')).map(input => ({ name: input.value }))
+            };
+
+            fetch('/api/book/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
-                bookingForm.reset();
-                document.getElementById('additionalGuestsContainer').innerHTML = '';
-                document.getElementById('additionalGuestsContainer').classList.add('d-none');
-                updatePriceSummary();
-            }, 1500);
+                
+                if (data.success) {
+                    showBookingConfirmation(data.booking_id);
+                    bookingForm.reset();
+                    document.getElementById('additionalGuestsContainer').innerHTML = '';
+                    document.getElementById('additionalGuestsContainer').style.display = 'none';
+                    updatePriceSummary();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                console.error('Error:', error);
+                alert('An error occurred while processing your booking. Please try again.');
+            });
         }
     });
 
@@ -579,7 +611,7 @@ function clearValidation() {
     document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
 }
 
-function showBookingConfirmation() {
+function showBookingConfirmation(backendBookingId) {
     const name = document.getElementById('guestName').value;
     const roomType = document.getElementById('roomType');
     const roomName = roomType.options[roomType.selectedIndex].text.split('—')[0].trim();
@@ -603,9 +635,9 @@ function showBookingConfirmation() {
             <p><strong>Duration:</strong> ${nights} night${nights > 1 ? 's' : ''}</p>
             <p class="fs-5 fw-bold text-crimson"><strong>Total:</strong> ₹${total.toLocaleString('en-IN')}</p>
             <hr>
-            <p class="text-success small"><i class="bi bi-check-circle-fill"></i> A confirmation has been sent to your registered email and phone number.</p>
+            <p class="text-success small"><i class="bi bi-check-circle-fill"></i> A confirmation has been sent to your registered email.</p>
         </div>
-        <p class="mt-2">Booking ID: <strong>GC-${Date.now().toString().slice(-8)}</strong></p>
+        <p class="mt-2">Booking ID: <strong>${backendBookingId || 'GC-' + Date.now().toString().slice(-8)}</strong></p>
     `;
 
     const modal = new bootstrap.Modal(document.getElementById('bookingConfirmModal'));
@@ -735,4 +767,19 @@ function initBackToTop() {
     btn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+}
+
+function getCSRFToken() {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, 10) === ('csrftoken=')) {
+                cookieValue = decodeURIComponent(cookie.substring(10));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }

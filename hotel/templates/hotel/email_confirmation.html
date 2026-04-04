@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            background-color: #C00000;
+            /* Crimson */
+            padding: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        .hero {
+            position: relative;
+            height: 200px;
+            background: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .welcome-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #C00000;
+        }
+
+        .details-card {
+            background: #fff8f8;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #fce4e6;
+            margin: 30px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #fce4e6;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .value {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .footer {
+            background-color: #f1f3f5;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .social-links {
+            margin-bottom: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #9b1c31;
+            text-decoration: none;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #C00000;
+            color: #ffffff !important;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>The Grand Crimson</h1>
+        </div>
+        <div class="hero"></div>
+        <div class="content">
+            <div class="welcome-text">Reservation Confirmed!</div>
+            <p>Dear {{ guest_name }},</p>
+            <p>Thank you for choosing <strong>The Grand Crimson</strong>. We are delighted to confirm your upcoming stay
+                with us. Our team is already preparing to welcome you with the finest luxury the city has to offer.</p>
+
+            <div class="details-card">
+                <div class="detail-row">
+                    <span class="label">Booking ID:</span>
+                    <span class="value">{{ booking_id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Guest(s):</span>
+                    <span class="value">{{ guest_list }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Room Category:</span>
+                    <span class="value">{{ room_type }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Total Rooms:</span>
+                    <span class="value">{{ num_rooms }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Check-in Date:</span>
+                    <span class="value">{{ check_in }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Check-out Date:</span>
+                    <span class="value">{{ check_out }}</span>
+                </div>
+                {% if special_requests %}
+                <div class="detail-row">
+                    <span class="label">Special Requests:</span>
+                    <span class="value">{{ special_requests }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <p style="text-align: center;">
+                <a href="http://127.0.0.1:8000" class="btn">Manage Your Booking</a>
+            </p>
+
+            <p>If you have any questions or require concierge assistance before your arrival, please don't hesitate to
+                reach out to us.</p>
+        </div>
+        <div class="footer">
+            <div class="social-links">
+                <a href="#">Facebook</a> | <a href="#">Instagram</a> | <a href="#">Twitter</a>
+            </div>
+            <p>42 Crimson Boulevard, Connaught Place, New Delhi – 110001, India</p>
+            <p>+91 11 2345 6789 | reservations@grandcrimson.com</p>
+            <p>&copy; 2026 The Grand Crimson. All Rights Reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>

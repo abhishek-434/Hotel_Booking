@@ -3,7 +3,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.http import JsonResponse
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from .models import Booking
@@ -112,14 +113,35 @@ The Grand Crimson Team
 42 Crimson Boulevard, New Delhi
             """
 
-            # Send the email
-            send_mail(
+            # HTML Context
+            context = {
+                'guest_name': guest_name,
+                'guest_list': guest_list,
+                'booking_id': booking_id,
+                'room_type': room_type_id.capitalize(),
+                'num_rooms': num_rooms,
+                'check_in': check_in,
+                'check_out': check_out,
+                'special_requests': special_request,
+            }
+
+            # Render HTML content
+            html_message = render_to_string('hotel/email_confirmation.html', context)
+
+            # Create the email
+            email = EmailMultiAlternatives(
                 subject,
-                message,
+                message, # Plain text version
                 settings.DEFAULT_FROM_EMAIL,
-                [guest_email],
-                fail_silently=False,
+                [guest_email]
             )
+            email.attach_alternative(html_message, "text/html")
+            
+            # Send the email
+            try:
+                email.send(fail_silently=False)
+            except Exception as e:
+                print(f"Email sending failed: {e}")
 
             return JsonResponse({
                 'success': True,
